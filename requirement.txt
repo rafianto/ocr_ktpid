@@ -1,0 +1,8 @@
+cycler
+kiwisolver
+matplotlib==3.3.4
+numpy
+opencv-python
+Pillow
+wheel
+pytesseract
