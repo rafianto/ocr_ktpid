@@ -25,8 +25,8 @@ if __name__ == "__main__":
         text = ocr.to_json()
         print(text)
 
-        data = json.loads(api_data)
-        nodes = data['nodes']
+        # data = json.loads(api_data)
+        # nodes = data['nodes']
 
         #save to database -
         cur = conn.cursor()
