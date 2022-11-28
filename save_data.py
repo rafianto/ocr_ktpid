@@ -22,21 +22,18 @@ if __name__ == "__main__":
         
         ktppath = os.path.dirname(os.path.realpath(__file__)) + "/dataset/ktp.jpg"
         ocr = KTPOCR(ktppath)
-        text = ocr.to_json()
-        print(text)
-
-        # data = json.loads(api_data)
-        # nodes = data['nodes']
+        obj_json = ocr.to_json()
+        jsonStr = obj_json.encode("utf-8")
+        print(obj_json)
 
         #save to database -
         cur = conn.cursor()
-        # cur.execute("select *  from ped_crashes limit 5")
-        # row = cur.fetchall() 
-        # print("#---------------------------------------")
-        # for r in row:
-        #        print(f" id {r[0]}  {r[1]}  {r[2]} {r[3]}")
-        # print("#---------------------------------------")    
         
+        # print(jsonStr['nama'])
+        # for key, value in obj_json:
+            # nik_ = item['nik']
+            # print(key)
+            
         cur.close()        
         conn.close()
         
