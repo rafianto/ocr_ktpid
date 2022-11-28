@@ -2,6 +2,7 @@
 import psycopg2
 from ktp_ocr import KTPOCR
 import os
+import json
 
 if __name__ == "__main__":
 
@@ -23,20 +24,44 @@ if __name__ == "__main__":
         ktppath = os.path.dirname(os.path.realpath(__file__)) + "/dataset/ktp.jpg"
         ocr = KTPOCR(ktppath)
         obj_json = ocr.to_json()
-        jsonStr = obj_json.encode("utf-8")
-        print(obj_json)
-
-        #save to database -
-        cur = conn.cursor()
+        # jsonStr = obj_json.encode("utf-8")
+        # print(obj_json)    
+        # print(obj_json.format('nik'))
+        data = json.loads(obj_json)
         
-        # print(jsonStr['nama'])
-        # for key, value in obj_json:
-            # nik_ = item['nik']
-            # print(key)
+        print(f"-----------------------------------------")
+        print(f"N I K          : {data['nik'].strip()}")
+        print(f"Nama           : {data['nama'].strip()}")
+        print(f"Tempat Lahir   : {data['tempat_lahir']}")
+        print(f"Tanggal Lahir  : {data['tanggal_lahir']}")
+        print(f"Jenis Kelamin  : {data['jenis_kelamin']}")
+        print(f"Golongan Darah : {data['golongan_darah']}")
+        print(f"Alamat Tinggal : {data['alamat']}")
+        print(f"R T            : {data['rt']}")
+        print(f"R W            : {data['rw']}")
+        print(f"Kelurahan/Desa : {data['kelurahan_atau_desa'].strip()}")
+        print(f"Kecamatan      : {data['kecamatan'].strip()}")
+        print(f"Agama          : {data['agama'].strip()}")
+        print(f"Status Kawin   : {data['status_perkawinan'].strip()}")
+        print(f"Pekerjaan      : {data['pekerjaan'].strip()}")
+        print(f"Kewarganegaraan: {data['kewarganegaraan']}")        
+                
+        print(f"-----------------------------------------")
+        print("")
+                
+        #save to database -
+        cursor = conn.cursor()
+        
+        postgres_insert_query = """ INSERT INTO datascan_ktp (NIK, NAMA, TEMPAT_LAHIR,TANGGAL_LAHIR) VALUES (%s,%s,%s,%s)"""
+        record_to_insert = (data['nik'].strip(),data['nama'].strip(), data['tempat_lahir'],data['tanggal_lahir'])
+        cursor.execute(postgres_insert_query, record_to_insert)
+
+        conn.commit()
             
-        cur.close()        
+        cursor.close()        
         conn.close()
         
         print("Database closed & Save data!")
+        print(" ")
     except Exception as error:
         print(error)    
