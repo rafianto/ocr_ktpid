@@ -15,4 +15,4 @@ class KTPData(object):
         self.status_perkawinan = ""
         self.pekerjaan = ""
         self.kewarganegaraan = ""
-        berlaku_hingga = "SEMUR HIDUP"    
+        berlaku_hingga = "SEMUR HIDUP"

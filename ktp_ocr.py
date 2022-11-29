@@ -68,9 +68,8 @@ class KTPOCR(object):
                     tgl = '-'.join(tgl)
                     tmpt_lahir = re.sub(r'[^a-zA-Z]', '', word[1])
                     self.result.tanggal_lahir = tgl
-                    
-                    # self.result.tanggal_lahir = tgl[0] + "-" + tgl[1] + "-" + tgl[2]
-                    # self.result.tempat_lahir = tmpt_lahir
+                    self.result.tempat_lahir = tmpt_lahir
+                                        
                     # print(re.search("([0-9]{2}\-[0-9]{2}\-[0-9]{4})", word)[0])
                     # self.result.tanggal_lahir = re.search("([0-9]{2}\-[0-9]{2}\-[0-9]{4})", word[-1])[0]
                     # self.result.tempat_lahir = word[-1].replace(self.result.tanggal_lahir, '')
@@ -124,15 +123,13 @@ class KTPOCR(object):
             if 'Agama' in word:
                 agama = word.replace('Agama',"").strip()
                 self.result.agama = re.sub(r'[^a-zA-Z]', '', agama)
-                # self.result.agama = word.replace('Agama',"").strip()
             if 'Status' in word or 'Perkawinan' in word:
                 status_perkawinan = re.search("(BELUM KAWIN|KAWIN|CERAI HIDUP|CERAI MATI|DUDA|BUJANG)", word)
                 if status_perkawinan == None:
                     self.result.status_perkawinan = '-'
                 else:
                     self.result.status_perkawinan = status_perkawinan[0]
-                # self.result.status_perkawinan = re.search("(BELUM KAWIN|KAWIN|CERAI HIDUP|CERAI MATI|DUDA|BUJANG)", word)[0]
-                # self.result.status_perkawinan = word.split(':')[1]
+                    self.result.status_perkawinan = re.search("(BELUM KAWIN|KAWIN|CERAI HIDUP|CERAI MATI|DUDA|BUJANG)", word)[0]
             if "RTRW" in word:
                 word = word.replace("RTRW",'')
                 if self.has_numbers(word):
@@ -140,9 +137,6 @@ class KTPOCR(object):
                     self.result.rt = rt_rw[0]
                     self.result.rw = rt_rw[1]
                     
-                # self.result.rt = word.split(' ')[1].strip()
-                # self.result.rw = word.split(' ')[2 ].strip()
-
     def master_process(self):
         raw_text = self.process(self.image)
         self.extract(raw_text)

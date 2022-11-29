@@ -1,11 +1,23 @@
 
 import psycopg2
 from ktp_ocr import KTPOCR
-import os
+import os 
 import json
+import re
+
+
+def mid(s, offset, amount):
+    return s[offset-1:offset+amount-1]
+
+sistem_operasi = os.name
+if sistem_operasi == "posix":
+    os.system("clear")
+else:
+    os.system("cls")
+
 
 if __name__ == "__main__":
-
+                
     hostname = 'localhost'
     database = 'hr'
     username = 'hr'
@@ -20,7 +32,8 @@ if __name__ == "__main__":
             password = pwd,
             port = port_id
         )
-        
+
+               
         ktppath = os.path.dirname(os.path.realpath(__file__)) + "/dataset/ktp.jpg"
         ocr = KTPOCR(ktppath)
         obj_json = ocr.to_json()
@@ -48,15 +61,25 @@ if __name__ == "__main__":
                 
         print(f"-----------------------------------------")
         print("")
-                
-        #save to database -
+        
+        num = re.search(r'-?\d+', data['nik'])  #regex only get number nik        
+        print(f"{num}")
+        print("Matching word: ", num.group())
+        niknew = print(num.group())
+        print(niknew)
+        
+        if len(niknew) > 16 :
+              nik_ = mid(num,1, 16)
+              print(f'{nik_}')
+                             
+        #save to database ---
         cursor = conn.cursor()
         
         postgres_insert_query = """ INSERT INTO datascan_ktp (NIK, NAMA, TEMPAT_LAHIR,TANGGAL_LAHIR,
         JENIS_KELAMIN,GOLONGAN_DARAH,ALAMAT,RT,RW,KELURAHAN_ATAU_DESA,KECAMATAN,AGAMA,STATUS_PERKAWINAN,
         PEKERJAAN,KEWARGANEGARAAN) 
         VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"""
-        record_to_insert = (data['nik'].strip(),data['nama'].strip(), data['tempat_lahir'],data['tanggal_lahir'],
+        record_to_insert = (niknew.strip(),data['nama'].strip(), data['tempat_lahir'],data['tanggal_lahir'],
                             data['jenis_kelamin'],data['golongan_darah'],data['alamat'],data['rt'],data['rw'],
                             data['kelurahan_atau_desa'].strip(),data['kecamatan'].strip(),data['agama'].strip(),
                             data['status_perkawinan'].strip(),data['pekerjaan'].strip(),data['kewarganegaraan'])
@@ -70,4 +93,4 @@ if __name__ == "__main__":
         print("Database closed & Save data!")
         print(" ")
     except Exception as error:
-        print(error)    
+        print(error)
