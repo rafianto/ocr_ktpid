@@ -80,28 +80,35 @@ if __name__ == "__main__":
         #save to database ---
         cursor = conn.cursor()
         
-        postgres_select_query = """ SELECT nik FROM datascan_ktp WHERE nik = '{nik_}' """
-        datafind = cursor.execute(postgres_select_query)
+        postgres_select_query = """SELECT nik FROM datascan_ktp ORDER BY nik"""
+        cursor.execute(postgres_select_query)        
+        print("The number of parts: ", cursor.rowcount)
+        rows = cursor.fetchone()
         
-        if datafind == True:
-            print("NIK sudah ada di Postgress")
-        else:    
-            postgres_insert_query = """ INSERT INTO datascan_ktp (NIK, NAMA, TEMPAT_LAHIR,TANGGAL_LAHIR,
-            JENIS_KELAMIN,GOLONGAN_DARAH,ALAMAT,RT,RW,KELURAHAN_ATAU_DESA,KECAMATAN,AGAMA,STATUS_PERKAWINAN,
-            PEKERJAAN,KEWARGANEGARAAN) 
-            VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"""
-            record_to_insert = (nik_,data['nama'].strip(), data['tempat_lahir'],data['tanggal_lahir'],
+        for row in rows:
+            #print(row)
+            if row[0] == nik_ :
+               print("Ok ketemu")
+               break
+               print("Database closed & Nik Found!")
+               print(" ")
+               
+            else:    
+                postgres_insert_query = """ INSERT INTO datascan_ktp (NIK, NAMA, TEMPAT_LAHIR,TANGGAL_LAHIR,
+                JENIS_KELAMIN,GOLONGAN_DARAH,ALAMAT,RT,RW,KELURAHAN_ATAU_DESA,KECAMATAN,AGAMA,STATUS_PERKAWINAN,
+                PEKERJAAN,KEWARGANEGARAAN) 
+                VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"""
+                record_to_insert = (nik_,data['nama'].strip(), data['tempat_lahir'],data['tanggal_lahir'],
                                 data['jenis_kelamin'],data['golongan_darah'],data['alamat'],data['rt'],data['rw'],
                                 data['kelurahan_atau_desa'].strip(),data['kecamatan'].strip(),data['agama'].strip(),
                                 data['status_perkawinan'].strip(),data['pekerjaan'].strip(),data['kewarganegaraan'])
-            cursor.execute(postgres_insert_query, record_to_insert)
-
-            conn.commit()
+                cursor.execute(postgres_insert_query, record_to_insert)
+                conn.commit()
+                print("Database closed & Save data!")
+                print(" ")
                 
         cursor.close()
         conn.close()
         
-        print("Database closed & Save data!")
-        print(" ")
     except Exception as error:
         print(error)
