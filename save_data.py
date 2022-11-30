@@ -37,9 +37,6 @@ if __name__ == "__main__":
         ktppath = os.path.dirname(os.path.realpath(__file__)) + "/dataset/ktp.jpg"
         ocr = KTPOCR(ktppath)
         obj_json = ocr.to_json()
-        # jsonStr = obj_json.encode("utf-8")
-        # print(obj_json)    
-        # print(obj_json.format('nik'))
         data = json.loads(obj_json)
         
         print(f"-----------------------------------------")
@@ -62,15 +59,23 @@ if __name__ == "__main__":
         print(f"-----------------------------------------")
         print("")
         
-        num = re.search(r'-?\d+', data['nik'])  #regex only get number nik        
-        print(f"{num}")
-        print("Matching word: ", num.group())
-        niknew = print(num.group())
-        print(niknew)
+        num = re.search(r'-?\d+', data['nik']).group(0)  #regex only get number nik        
+        #print(f"{num}")
+        niknew = f"{num}"
         
-        if len(niknew) > 16 :
-              nik_ = mid(num,1, 16)
-              print(f'{nik_}')
+        if len(niknew) >= 17 :
+           nik_ = mid(num,1, 16)
+           #print(f'{nik_}')
+        else:
+            nik_ = niknew
+
+        print(niknew)
+        print(f"{data['nik'].strip()}")
+        
+        if niknew.strip == data['nik'].strip():
+            nik_ = f"{data['nik'].strip()}"
+        else:
+            nik_ = niknew  
                              
         #save to database ---
         cursor = conn.cursor()
@@ -79,7 +84,7 @@ if __name__ == "__main__":
         JENIS_KELAMIN,GOLONGAN_DARAH,ALAMAT,RT,RW,KELURAHAN_ATAU_DESA,KECAMATAN,AGAMA,STATUS_PERKAWINAN,
         PEKERJAAN,KEWARGANEGARAAN) 
         VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"""
-        record_to_insert = (niknew.strip(),data['nama'].strip(), data['tempat_lahir'],data['tanggal_lahir'],
+        record_to_insert = (nik_,data['nama'].strip(), data['tempat_lahir'],data['tanggal_lahir'],
                             data['jenis_kelamin'],data['golongan_darah'],data['alamat'],data['rt'],data['rw'],
                             data['kelurahan_atau_desa'].strip(),data['kecamatan'].strip(),data['agama'].strip(),
                             data['status_perkawinan'].strip(),data['pekerjaan'].strip(),data['kewarganegaraan'])
@@ -87,7 +92,7 @@ if __name__ == "__main__":
 
         conn.commit()
             
-        cursor.close()        
+        cursor.close()
         conn.close()
         
         print("Database closed & Save data!")
