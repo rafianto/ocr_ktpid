@@ -38,6 +38,7 @@ class KTPOCR(object):
             'e' : "2",
             'D' : "0",
             'U' : "0",
+            '?' : "7",
         }
         res = ""
         for letter in word:
@@ -59,6 +60,7 @@ class KTPOCR(object):
             if "Nama" in word:
                 word = word.split(':')
                 self.result.nama = word[-1].replace('Nama ','')
+                self.result.nama = self.result.nama.replace('1','').strip()
                 continue
 
             if "Tempat" in word:
@@ -90,16 +92,21 @@ class KTPOCR(object):
                         self.result.golongan_darah = re.search("(O|A|B|AB)", word[-1])[0]
                 except:
                     self.result.golongan_darah = '-'
+                    
             if 'Alamat' in word:
                 self.result.alamat = self.word_to_number_converter(word).replace("Alamat ","")
                 self.result.alamat = self.result.alamat.replace(": ", "")
+                self.result.alamat = self.result.alamat.replace("1", "").strip()
+                
             if 'NO.' in word:
                 self.result.alamat = self.result.alamat + ' '+word
+                
             if "Kecamatan" in word:
                 if ':' in word:
                     self.result.kecamatan = word.split(':')[1].strip()
                 else:
                     self.result.kecamatan = word
+                    
             if "Desa" in word:
                 wrd = word.split()
                 desa = []
@@ -107,11 +114,13 @@ class KTPOCR(object):
                     if not 'desa' in wr.lower():
                         desa.append(wr)
                 self.result.kelurahan_atau_desa = ''.join(wr)
+                
             if 'Kewarganegaraan' in word:
                 if ':' in word:
-                    self.result.kewarganegaraan = re.sub(r'[^a-zA-Z]', '', word.split(':')[1].strip())    
+                    self.result.kewarganegaraan = re.sub(r'[^-zA-Z]', '', word.split(':')[1].strip())    
                 else:
                     self.result.kewarganegaraan = word.strip()
+                    
             if 'Pekerjaan' in word:
                 wrod = word.split()
                 pekerjaan = []
@@ -120,9 +129,11 @@ class KTPOCR(object):
                         pekerjaan.append(wr)
                 job = ' '.join(pekerjaan).replace('Pekerjaan', '').strip()
                 self.result.pekerjaan = re.sub(r'[^a-zA-Z]', ' ', job)
+                
             if 'Agama' in word:
                 agama = word.replace('Agama',"").strip()
                 self.result.agama = re.sub(r'[^a-zA-Z]', '', agama)
+                
             if 'Status' in word or 'Perkawinan' in word:
                 status_perkawinan = re.search("(BELUM KAWIN|KAWIN|CERAI HIDUP|CERAI MATI|DUDA|BUJANG)", word)
                 if status_perkawinan == None:
@@ -130,6 +141,7 @@ class KTPOCR(object):
                 else:
                     self.result.status_perkawinan = status_perkawinan[0]
                     self.result.status_perkawinan = re.search("(BELUM KAWIN|KAWIN|CERAI HIDUP|CERAI MATI|DUDA|BUJANG)", word)[0]
+                    
             if "RTRW" in word:
                 word = word.replace("RTRW",'')
                 if self.has_numbers(word):
